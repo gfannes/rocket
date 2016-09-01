@@ -16,14 +16,16 @@ namespace rocket {
                 {
                     S("world");
                     const double height = rocket_.position.norm()-Earth::radius();
-                    L(C(height));
+                    const double mass = rocket_.mass();
+                    L(C(height)C(mass));
+                    const auto drag = rocket_.drag(Atmosphere::density(height));
+                    const auto thrust = rocket_.thrust();
+                    const auto gravity = Earth::gravity(rocket_.position).multiply(mass);
                     V2 force;
-                    /* force += rocket_.thrust(); */
-                    /* L(C(force)); */
-                    /* force += rocket_.drag(); */
-                    /* L(C(force)); */
-                    force += Earth::gravity(rocket_.position).multiply(rocket_.mass());
-                    L(C(force));
+                    force += drag;
+                    force += thrust;
+                    force += gravity;
+                    L(C(drag)C(thrust)C(gravity) <<  " => " << C(force));
 
                     rocket_.process(force, dt);
                 }

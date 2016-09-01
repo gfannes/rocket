@@ -1,27 +1,29 @@
 #ifndef HEADER_rocket_Atmosphere_hpp_ALREADY_INCLUDED
 #define HEADER_rocket_Atmosphere_hpp_ALREADY_INCLUDED
 
+#include "rocket/Constants.hpp"
 #include <cmath>
 
 namespace rocket { 
     class Atmosphere
     {
         public:
-            double density(double altitude) const
+            static double density(double height)
             {
-                if (altitude < sea_)
-                    return density_sea_;
-                if (altitude > leo_)
-                    return density_leo_;
-                return a_*std::exp(b_*altitude);
+                static const double sea_level = 0.0;
+                static const double leo_level = Leo;
+                static const double density_sea = 1.29;
+                static const double density_leo = 1.0e-9;
+                static const double b_ = std::log(density_sea/density_leo)/(sea_level-leo_level);
+                static const double a_ = density_sea/std::exp(b_*sea_level);
+
+                if (height < sea_level)
+                    return density_sea;
+                if (height > leo_level)
+                    return density_leo;
+                return a_*std::exp(b_*height);
             }
         private:
-            const double sea_ = 0.0;
-            const double leo_ = 160000.0;
-            const double density_sea_ = 1.0;
-            const double density_leo_ = 1.0e-9;
-            const double b_ = std::log(density_sea_/density_leo_)/(sea_-leo_);
-            const double a_ = density_sea_/std::exp(b_*sea_);
     };
 } 
 

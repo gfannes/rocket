@@ -26,6 +26,20 @@ namespace rocket {
         {
             return std::sqrt(x*x + y*y);
         }
+        double inprod(const V2 &rhs) const
+        {
+            return x*rhs.x + y*rhs.y;
+        }
+        double angle(const V2 &rhs) const
+        {
+            return std::acos(inprod(rhs)/norm()/rhs.norm());
+        }
+        double distance(const V2 &rhs) const
+        {
+            const auto dx = x-rhs.x;
+            const auto dy = y-rhs.y;
+            return std::sqrt(dx*dx + dy*dy);
+        }
 
         V2 invert() const {return V2{-x, -y};}
         V2 multiply(double f) const {return V2{x*f, y*f};}

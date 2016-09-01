@@ -7,6 +7,9 @@ namespace rocket {
     const auto Eps = 1.0e-20;
 
     const auto G = 6.67384e-11;
+    const auto Gravity = 9.81;
+
+    const auto Leo = 160000.0;
 } 
 
 #endif
