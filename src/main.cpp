@@ -15,8 +15,10 @@ int main()
     const auto start_position = rocket.position;
     World world(rocket);
 
-    const double max_t = 250.0;
-    const double delta_t = 0.1;
+    /* const double max_t = 250.0; */
+    /* const double delta_t = 0.1; */
+    const double max_t = 30.0;
+    const double delta_t = 1.0;
     const double target_height = rocket::Leo;
 
     double max_height = 0.0;

@@ -17,21 +17,35 @@ namespace rocket {
             Velocity velocity{0.0, 0.0};
             Direction direction{1.0, 0.0};
 
-            const double radius = 1.0;
+            /* const double radius = 1.0; */
+            const double radius = 0.1;
 
             //According to http://hyperphysics.phy-astr.gsu.edu/hbase/airfri2.html, a sphere with size 1m (area 3.1415m*m) made out of water (4188kg)
             //should fall at terminal velocity of 201.287m/s, given C == 0.5 and density air == 1.29kg/m/m/m
             const double c_sphere = 0.5;
             const double c_drop = 0.04;
-            const double c_rocket = 0.1;
+            /* const double c_rocket = 0.1; */
+            /* const double c_rocket = 0.75; */
+            const double c_rocket = 0.9;
 
             /* const double c = c_sphere; */
-            const double c = c_rocket;
+            const double c = 2*c_rocket;
             Shape shape{c, Pi*radius*radius};
 
-            static double thr_duration() {return 15.0;};
-            static double thr_mass() {return 35.0;}
-            static double thr_one() {return 2250.0;}
+            static double thr_duration()
+            {
+                return 12;
+                return 15.0;
+            };
+            static double thr_mass()
+            {
+                return 27.96;
+                return 35.0;
+            }
+            static double thr_one()
+            {
+                return 3730.0;
+            }
             struct Stage
             {
                 double duration = thr_duration();
@@ -41,9 +55,11 @@ namespace rocket {
                 Stage(double nr_thr): nr_thr(nr_thr) {}
             };
             //Reaches 164km with max_g of 7
-            std::list<Stage> stages = {Stage(1000), Stage(800), Stage(350)};
+            /* std::list<Stage> stages = {Stage(1000), Stage(800), Stage(350)}; */
+            std::list<Stage> stages = {Stage(1)};
 
-            const double payload = 10.0e3;
+            /* const double payload = 10.0e3; */
+            const double payload = 30.0;
             double mass() const
             {
                 double m = payload;
