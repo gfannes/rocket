@@ -6,3 +6,7 @@
 	path = gubg.build
 	url = https://github.com/gfannes/gubg.build
 	branch = master
+[submodule "gubg.io"]
+	path = gubg.io
+	url = https://github.com/gfannes/gubg.io
+	branch = master

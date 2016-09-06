@@ -15,7 +15,7 @@ task :clean do
 end
 
 def each_submod(&block)
-    submods = %w[build std].map{|n|"gubg.#{n}"}
+    submods = %w[build std io].map{|n|"gubg.#{n}"}
     GUBG::each_submod(submods, &block)
 end
 
@@ -48,5 +48,6 @@ end
 task :run => :build do
     #Run the rocket simulator
     sh "./#{rocket.exe_filename}"
+    sh "gnuplot output.gnuplot"
 end
 task :default => :run

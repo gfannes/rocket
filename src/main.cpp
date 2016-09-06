@@ -1,5 +1,6 @@
 #include "rocket/World.hpp"
 #include "rocket/Rocket.hpp"
+#include "gubg/gnuplot/Stream.hpp"
 #include "gubg/debug.hpp"
 #include <algorithm>
 #include <iostream>
@@ -24,6 +25,8 @@ int main()
     double max_height = 0.0;
     double max_accel = 0.0;
 
+    gubg::gnuplot::Stream gp("output.gnuplot");
+
     for (double t = 0.0; t < max_t; t += delta_t)
     {
         S("loop");
@@ -34,6 +37,9 @@ int main()
         max_accel = std::max<double>(max_accel, rocket.acceleration());
         const auto pct = 100.0*(height/target_height);
         L(C(pct) << ": " << C(rocket)C(height)C(max_height));
+        std::array<double, 2> values = {t, height};
+        if (!gp.add(values))
+            return -1;
     }
     L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
 
