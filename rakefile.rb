@@ -1,5 +1,13 @@
+#We use a local gubg working dir
 ENV['gubg'] = Dir.pwd
-require('./gubg.build/shared.rb')
+
+begin
+    require('./gubg.build/shared.rb')
+rescue LoadError
+    #This is the initial clone: no gubg.build is present yet. Mediate and try to load again
+    sh 'git submodule update --init --recursive'
+    retry
+end
 
 task :clean do
     rm_rf('.cache')
@@ -11,6 +19,7 @@ def each_submod(&block)
     GUBG::each_submod(submods, &block)
 end
 
+#Installation of the gubg modules currently in use
 task :declare do
     each_submod{sh 'rake declare'}
 end
@@ -21,6 +30,8 @@ end
 rocket = nil
 task :setup do
     require('gubg/build/Executable')
+
+    #This is the rocket simulator
     rocket = Build::Executable.new('rocket')
     rocket.add_define('DEBUG')
     rocket.add_include_path('src')
@@ -31,9 +42,11 @@ task :setup do
 end
 
 task :build => [:define, :setup] do
+    #Build the rocket simulator
     rocket.build
 end
 task :run => :build do
+    #Run the rocket simulator
     sh "./#{rocket.exe_filename}"
 end
 task :default => :run
