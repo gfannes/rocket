@@ -1,2 +1,8 @@
 *.exe
 .cache/
+extern/
+include/
+lib/
+ruby/
+shared.rb
+source/
