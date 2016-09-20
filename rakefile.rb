@@ -27,6 +27,11 @@ task :define => :declare do
     each_submod{sh 'rake define'}
 end
 
+#Update each submodule to the head
+task :uth do
+    each_submod{sh 'git checkout master'; sh 'git pull --rebase'}
+end
+
 rocket = nil
 task :setup do
     require('gubg/build/Executable')

@@ -1,4 +1,5 @@
 *.exe
+*.gnuplot
 .cache/
 extern/
 include/

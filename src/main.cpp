@@ -18,14 +18,16 @@ int main()
 
     /* const double max_t = 250.0; */
     /* const double delta_t = 0.1; */
-    const double max_t = 30.0;
+    const double max_t = 50.0;
     const double delta_t = 1.0;
     const double target_height = rocket::Leo;
 
     double max_height = 0.0;
     double max_accel = 0.0;
 
-    gubg::gnuplot::Stream gp("output.gnuplot");
+    gubg::gnuplot::Stream gs;
+    const int height_ix = 0;
+    gs.name(height_ix, "height (in meters)");
 
     for (double t = 0.0; t < max_t; t += delta_t)
     {
@@ -37,11 +39,11 @@ int main()
         max_accel = std::max<double>(max_accel, rocket.acceleration());
         const auto pct = 100.0*(height/target_height);
         L(C(pct) << ": " << C(rocket)C(height)C(max_height));
-        std::array<double, 2> values = {t, height};
-        if (!gp.add(values))
-            return -1;
+        gs.data(height_ix) << t << height;
     }
     L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
+
+    gs.save("output.gnuplot");
 
     std::cout << "Everything went OK" << std::endl;
     return 0;
