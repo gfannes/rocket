@@ -47,8 +47,8 @@ namespace  {
                 L(C(pct) << ": " << C(rocket)C(height)C(max_height)C(accel));
 
                 if (name_columns())
-                    gs.name(time_data, 0, "time (s)").name(time_data, 1, "accel (m/s^2)").name(time_data, 2, "height (km)").name(time_data, 3, "speed (hectom/s)");
-                gs.data(time_data) << t << accel << height_km << speed/100.0;
+                    gs.name(time_data, 0, "time (s)").name(time_data, 1, "accel (m/s^2)").name(time_data, 2, "height (km)").name(time_data, 3, "speed (decam/s)");
+                gs.data(time_data) << t << accel << height_km << speed/10.0;
             }
             L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
         }
@@ -62,7 +62,7 @@ int main()
 
     gubg::gnuplot::Stream gs;
 
-    process_world<SingleStage>(180.0, delta_t, gs);
+    process_world<SingleStage>(100.0, delta_t, gs);
     gs.pause();
 
     process_world<MultiStage>(800.0, delta_t, gs);

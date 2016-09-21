@@ -10,6 +10,7 @@ class MultiStage: public rocket::StagedRocket_crtp<MultiStage>
         const double thr_duration = 15.0;
         const double thr_mass = 35.0;
         const double thr_one = 3730.0;
+        /* const double thr_one = 2250.0; */
 
         //According to http://hyperphysics.phy-astr.gsu.edu/hbase/airfri2.html, a sphere with size 1m (area 3.1415m*m) made out of water (4188kg)
         //should fall at terminal velocity of 201.287m/s, given C == 0.5 and density air == 1.29kg/m/m/m
@@ -17,7 +18,7 @@ class MultiStage: public rocket::StagedRocket_crtp<MultiStage>
         const double c_drop = 0.04;
         const double c_rocket = 0.9;
 
-        const double drag_coef = 2*c_rocket;
+        const double drag_coef = c_rocket;
 
         MultiStage()
         {

@@ -19,7 +19,7 @@ class SingleStage: public rocket::StagedRocket_crtp<SingleStage>
         /* const double c_rocket = 0.75; */
         const double c_rocket = 0.9;
 
-        const double drag_coef = 2*c_rocket;
+        const double drag_coef = c_rocket;
 
         SingleStage()
         {
