@@ -28,32 +28,40 @@ int main()
 
     gubg::gnuplot::Stream gs;
     const int time_data = 0;
-    gs.name(time_data, "time data");
-    gubg::OnlyOnce name_columns;
 
-    for (double t = 0.0; t < max_t; t += delta_t)
+    //Closure that processes the world and collects data
+    auto process_world = [&]()
     {
-        S("loop");
-        L(C(t));
+        gubg::OnlyOnce name_columns;
+        for (double t = 0.0; t < max_t; t += delta_t)
+        {
+            S("loop");
+            L(C(t));
 
-        world.process(delta_t);
+            world.process(delta_t);
 
-        const auto height = rocket.position.norm() - start_position.norm();
-        const auto height_km = height/1000.0;
-        const auto accel = rocket.acceleration();
-        const auto speed = rocket.speed();
+            const auto height = rocket.position.norm() - start_position.norm();
+            const auto height_km = height/1000.0;
+            const auto accel = rocket.acceleration();
+            const auto speed = rocket.speed();
 
-        max_height = std::max<double>(max_height, height);
-        max_accel = std::max<double>(max_accel, accel);
+            max_height = std::max<double>(max_height, height);
+            max_accel = std::max<double>(max_accel, accel);
 
-        const auto pct = 100.0*(height/target_height);
-        L(C(pct) << ": " << C(rocket)C(height)C(max_height)C(accel));
+            const auto pct = 100.0*(height/target_height);
+            L(C(pct) << ": " << C(rocket)C(height)C(max_height)C(accel));
 
-        if (name_columns())
-            gs.name(time_data, 0, "time (s)").name(time_data, 1, "accel (m/s^2)").name(time_data, 2, "height (km)").name(time_data, 3, "speed (m/s)");
-        gs.data(time_data) << t << accel << height_km << speed;
+            if (name_columns())
+                gs.name(time_data, 0, "time (s)").name(time_data, 1, "accel (m/s^2)").name(time_data, 2, "height (km)").name(time_data, 3, "speed (m/s)");
+            gs.data(time_data) << t << accel << height_km << speed;
+        }
+        L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
+    };
+
+    {
+        gs.name(time_data, rocket.name());
+        process_world();
     }
-    L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
 
     gs.save("output.gnuplot");
 

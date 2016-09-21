@@ -12,6 +12,8 @@ namespace rocket {
     class Rocket
     {
         public:
+            std::string name() const {return "single stage";}
+
             Position position{rocket::Earth::radius(), 0.0};
             /* Velocity velocity{0.0, -rocket::Earth::equator_speed()}; */
             Velocity velocity{0.0, 0.0};
