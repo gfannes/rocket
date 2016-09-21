@@ -43,6 +43,7 @@ task :setup do
     rocket.add_include_path(GUBG::shared_dir('include'))
     rocket.add_sources(FileList.new('src/**/*.cpp'))
     rocket.add_sources(FileList.new('src/**/*.hpp'))
+    rocket.add_sources(FileList.new(GUBG::shared('include/**/*.hpp')))
     rocket.add_library_path(GUBG::shared_dir('lib'))
 end
 

@@ -1,6 +1,7 @@
 #include "rocket/World.hpp"
 #include "rocket/Rocket.hpp"
 #include "gubg/gnuplot/Stream.hpp"
+#include "gubg/OnlyOnce.hpp"
 #include "gubg/debug.hpp"
 #include <algorithm>
 #include <iostream>
@@ -26,20 +27,31 @@ int main()
     double max_accel = 0.0;
 
     gubg::gnuplot::Stream gs;
-    const int height_ix = 0;
-    gs.name(height_ix, "height (in meters)");
+    const int time_data = 0;
+    gs.name(time_data, "time data");
+    gubg::OnlyOnce name_columns;
 
     for (double t = 0.0; t < max_t; t += delta_t)
     {
         S("loop");
         L(C(t));
+
         world.process(delta_t);
+
         const auto height = rocket.position.norm() - start_position.norm();
+        const auto height_km = height/1000.0;
+        const auto accel = rocket.acceleration();
+        const auto speed = rocket.speed();
+
         max_height = std::max<double>(max_height, height);
-        max_accel = std::max<double>(max_accel, rocket.acceleration());
+        max_accel = std::max<double>(max_accel, accel);
+
         const auto pct = 100.0*(height/target_height);
-        L(C(pct) << ": " << C(rocket)C(height)C(max_height));
-        gs.data(height_ix) << t << height;
+        L(C(pct) << ": " << C(rocket)C(height)C(max_height)C(accel));
+
+        if (name_columns())
+            gs.name(time_data, 0, "time (s)").name(time_data, 1, "accel (m/s^2)").name(time_data, 2, "height (km)").name(time_data, 3, "speed (m/s)");
+        gs.data(time_data) << t << accel << height_km << speed;
     }
     L(C(max_height)C(max_accel)C(max_accel/rocket::Gravity));
 
