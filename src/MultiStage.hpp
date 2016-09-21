@@ -15,10 +15,9 @@ class MultiStage: public rocket::StagedRocket_crtp<MultiStage>
         //should fall at terminal velocity of 201.287m/s, given C == 0.5 and density air == 1.29kg/m/m/m
         const double c_sphere = 0.5;
         const double c_drop = 0.04;
-        const double c_rocket = 0.75;
+        const double c_rocket = 0.9;
 
-        const double drag_coef = c_rocket;
-
+        const double drag_coef = 2*c_rocket;
 
         MultiStage()
         {
