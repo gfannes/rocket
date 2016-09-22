@@ -41,7 +41,7 @@ task :setup do
     # rocket.add_define('DEBUG')
     rocket.add_include_path('src')
     rocket.add_include_path(GUBG::shared_dir('include'))
-    rocket.add_sources(FileList.new('src/**/*.cpp'))
+    rocket.add_sources(FileList.new('src/**/*.cpp').exclude('src/test/**/*.cpp'))
     rocket.add_sources(FileList.new('src/**/*.hpp'))
     rocket.add_sources(FileList.new(GUBG::shared('include/**/*.hpp')))
     rocket.add_library_path(GUBG::shared_dir('lib'))
@@ -57,3 +57,19 @@ task :run => :build do
     sh "gnuplot output.gnuplot"
 end
 task :default => :run
+
+task :test do
+    require('gubg/build/Executable')
+
+    ut = Build::Executable.new('unit_tests')
+    #ut.add_define('DEBUG')
+    ut.add_include_path('src')
+    ut.add_include_path(GUBG::shared_dir('include'))
+    ut.add_sources(FileList.new('src/test/*.cpp'))
+    ut.add_sources(FileList.new('src/**/*.hpp'))
+    ut.add_sources(GUBG::shared_file('source', 'catch_runner.cpp'))
+    ut.add_sources(FileList.new(GUBG::shared('include/**/*.hpp')))
+    ut.add_library_path(GUBG::shared_dir('lib'))
+    ut.build
+    sh "./#{ut.exe_filename} -a -d yes"
+end
