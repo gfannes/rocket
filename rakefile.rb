@@ -62,7 +62,7 @@ task :test do
     require('gubg/build/Executable')
 
     ut = Build::Executable.new('unit_tests')
-    #ut.add_define('DEBUG')
+    ut.add_define('DEBUG')
     ut.add_include_path('src')
     ut.add_include_path(GUBG::shared_dir('include'))
     ut.add_sources(FileList.new('src/test/*.cpp'))
