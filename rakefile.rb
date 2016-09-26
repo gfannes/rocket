@@ -38,7 +38,7 @@ task :setup do
 
     #This is the rocket simulator
     rocket = Build::Executable.new('rocket')
-    # rocket.add_define('DEBUG')
+    rocket.add_define('DEBUG')
     rocket.add_include_path('src')
     rocket.add_include_path(GUBG::shared_dir('include'))
     rocket.add_sources(FileList.new('src/**/*.cpp').exclude('src/test/**/*.cpp'))

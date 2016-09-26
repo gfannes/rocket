@@ -2,11 +2,10 @@
 #define HEADER_rocket_StagedRocket_hpp_ALREADY_INCLUDED
 
 #include "rocket/Shape.hpp"
-#include "rocket/Motor.hpp"
+#include "rocket/Stages.hpp"
 #include "rocket/Earth.hpp"
 #include "rocket/V2.hpp"
 #include "gubg/debug.hpp"
-#include <list>
 #include <ostream>
 #include <cassert>
 
@@ -24,31 +23,12 @@ namespace rocket {
 
                 Shape shape;
 
-                struct Stage
-                {
-                    double nr_thr = 0.0;
-
-                    double duration = 0.0;
-                    double thr_duration = 0.0;
-                    double thr_one = 0.0;
-                    double mass_one = 0.0;
-                    double mass() const {return (nr_thr*mass_one)*(duration/thr_duration);}
-                    double thrust() const {return nr_thr*thr_one;}
-                    Stage(double nr_thr): nr_thr(nr_thr) {}
-                };
-                std::list<Stage> stages;
+                Stages stages;
 
                 //Call this after setting the thruster parameters or the stages or the shape
                 //Might include more settings in the future
                 void update()
                 {
-                    for (auto &stage: stages)
-                    {
-                        stage.duration = receiver_().thr_duration;
-                        stage.thr_duration = receiver_().thr_duration;
-                        stage.thr_one = receiver_().thr_one;
-                        stage.mass_one = receiver_().thr_mass;
-                    }
                     shape.drag_coef = receiver_().drag_coef;
                     shape.cross_area = Pi*radius*radius;
                 }
@@ -57,8 +37,7 @@ namespace rocket {
                 double mass() const
                 {
                     double m = payload;
-                    for (const auto &stage: stages)
-                        m += stage.mass();
+                    m += stages.mass();
                     return m;
                 }
 
@@ -67,11 +46,7 @@ namespace rocket {
 
                 Force thrust() const
                 {
-                    if (stages.empty())
-                        //No more fuel
-                        return Force{};
-                    const auto &stage = stages.front();
-                    return direction.multiply(stage.thrust());
+                    return direction.multiply(stages.thrust());
                 }
                 Force drag(double density) const
                 {
@@ -96,16 +71,7 @@ namespace rocket {
 
                     position += velocity.multiply(dt);
 
-                    if (!stages.empty())
-                    {
-                        auto &stage = stages.front();
-                        if (stage.duration <= dt)
-                            //This stage is burnt: drop it
-                            stages.pop_front();
-                        else
-                            //This stage is still burning, decrease its burn time
-                            stage.duration -= dt;
-                    }
+                    stages.process(dt);
 
                     normalize_();
                 }

@@ -7,10 +7,6 @@
 class SingleStage: public rocket::StagedRocket_crtp<SingleStage>
 {
     public:
-        const double thr_duration = 12.0;
-        const double thr_mass = 27.9;
-        const double thr_one = 3730.0;
-
         //According to http://hyperphysics.phy-astr.gsu.edu/hbase/airfri2.html, a sphere with size 1m (area 3.1415m*m) made out of water (4188kg)
         //should fall at terminal velocity of 201.287m/s, given C == 0.5 and density air == 1.29kg/m/m/m
         const double c_sphere = 0.5;
@@ -23,10 +19,14 @@ class SingleStage: public rocket::StagedRocket_crtp<SingleStage>
 
         SingleStage()
         {
-            radius = 0.1;
+            radius = 0.0972;
             payload = 30.0;
 
-            stages.emplace_back(1);
+            {
+                double r = 0.0972;
+                double l = 0.48;
+                stages.add(rocket::StageType::EndBurner, 1, l, 2*r);
+            }
 
             update();
         }

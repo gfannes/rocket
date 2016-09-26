@@ -2,6 +2,8 @@
 #define HEADER_rocket_Motor_hpp_ALREADY_INCLUDED
 
 #include "rocket/Constants.hpp"
+#include <ostream>
+#include <cmath>
 
 namespace rocket { 
 
@@ -94,7 +96,7 @@ namespace rocket {
 
             SideBurner(double length, double in_diameter): Motor(length, in_diameter) {}
 
-            std::string name() const {return "SideBurner";}
+            const char *name() const {return "SideBurner";}
 
             double burning_surface() const
             {
@@ -124,7 +126,7 @@ namespace rocket {
 
             EndBurner(double length, double in_diameter): Motor(length, in_diameter) {}
 
-            std::string name() const {return "EndBurner";}
+            const char *name() const {return "EndBurner";}
 
             double burning_surface() const
             {
