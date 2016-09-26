@@ -2,6 +2,7 @@
 #define HEADER_rocket_StagedRocket_hpp_ALREADY_INCLUDED
 
 #include "rocket/Shape.hpp"
+#include "rocket/Motor.hpp"
 #include "rocket/Earth.hpp"
 #include "rocket/V2.hpp"
 #include "gubg/debug.hpp"

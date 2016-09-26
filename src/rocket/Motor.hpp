@@ -41,27 +41,35 @@ namespace rocket {
                     return thrust_per_motor;
                 }
 
+                double burn_time() const
+                {
+                    return receiver_().burn_depth()/galcit::burn_rate_at_135_bar;
+                }
+
                 double empty_mass() const
                 {
                     const double motor_cylinder_volume = length_ * (out_diameter_*out_diameter_ - in_diameter_*in_diameter_)*Pi/4.0;
                     const double motor_mass_overhead = 1.1;//To account for the mass of the nozzle, fore side flange - TODO: increase this?
                     return motor_cylinder_volume * chamber::material_density * motor_mass_overhead;
                 }
+                double propellant_mass() const
+                {
+                    return receiver_().propellant_volume() * galcit::density;
+                }
+                double full_mass() const
+                {
+                    return empty_mass() + propellant_mass();
+                }
 
                 double cost() const
                 {
-                    const double propellant_grain_mass = receiver_().propellant_volume() * galcit::density;
-                    return empty_mass() * chamber::material_price + propellant_grain_mass * galcit::price;
+                    return empty_mass() * chamber::material_price + propellant_mass() * galcit::price;
                 }
 
             protected:
                 Receiver &receiver_() {return static_cast<Receiver&>(*this);}
                 const Receiver &receiver_() const {return static_cast<const Receiver&>(*this);}
 
-                double propellant_grain_square_side_length_() const
-                {
-                    return std::sqrt(in_diameter_*in_diameter_/2.0);
-                }
                 //Note that octave uses the outside diameter here
                 static double wall_thickness_(double in_diameter)
                 {
@@ -78,20 +86,34 @@ namespace rocket {
 
     class SideBurner: public Motor_crtp<SideBurner>
     {
+        private:
+            const double burning_sides_ = 2.0;
+
         public:
             using Motor = Motor_crtp<SideBurner>;
 
             SideBurner(double length, double in_diameter): Motor(length, in_diameter) {}
 
+            std::string name() const {return "SideBurner";}
+
             double burning_surface() const
             {
-                const double buring_sides = 2.0;
-                return buring_sides * length_ * propellant_grain_square_side_length_();
+                return burning_sides_ * length_ * propellant_grain_square_side_length_();
+            }
+            double burn_depth() const
+            {
+                return propellant_grain_square_side_length_()/burning_sides_;
             }
             double propellant_volume() const
             {
                 const double tmp = propellant_grain_square_side_length_();
                 return tmp*tmp * length_;
+            }
+
+        private:
+            double propellant_grain_square_side_length_() const
+            {
+                return std::sqrt(in_diameter_*in_diameter_/2.0);
             }
     };
 
@@ -99,11 +121,18 @@ namespace rocket {
     {
         public:
             using Motor = Motor_crtp<EndBurner>;
+
             EndBurner(double length, double in_diameter): Motor(length, in_diameter) {}
+
+            std::string name() const {return "EndBurner";}
 
             double burning_surface() const
             {
                 return in_diameter_*in_diameter_*Pi/4.0;
+            }
+            double burn_depth() const
+            {
+                return length_;
             }
             double propellant_volume() const
             {
