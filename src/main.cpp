@@ -21,8 +21,7 @@ namespace  {
             Rocket rocket(payload);
             gs.name(time_data, rocket.name());
             gs.name(pos_data, rocket.name());
-            L(C(rocket.name()));
-            L(C(rocket.mass()));
+            std::cout << C(rocket.name())C(rocket.mass()) << std::endl;
             const auto start_position = rocket.position;
 
             using World = rocket::World<Rocket>;
