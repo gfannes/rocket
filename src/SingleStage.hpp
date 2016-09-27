@@ -19,13 +19,14 @@ class SingleStage: public rocket::StagedRocket_crtp<SingleStage>
 
         SingleStage()
         {
+            //This is used for drag computations
             radius = 0.0972;
             payload = 30.0;
 
             {
                 double r = 0.0972;
                 double l = 0.48;
-                stages.add(rocket::StageType::EndBurner, 1, l, 2*r);
+                stages.add(rocket::StageType::EndBurner, 1, l, 2*r, true);
             }
 
             update();

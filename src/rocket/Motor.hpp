@@ -17,7 +17,19 @@ namespace rocket {
     //Chamber properties
     namespace chamber { 
         const double material_price = 3;//dollar/kg
-        const double material_density = 2810;//kg/m^3: steel has 7850, this value takes the isolation into account (twice as big as the steel)
+        const double material_density_steel_insulated = 2810;//kg/m^3: steel has 7850, this value takes the isolation into account (twice as big as the steel)
+        const double material_density_steel = 7850;//kg/m^3
+        /* const double pressure = 20000000;//N/m^2	(1 bar = 100 000 N/m^2) */
+        const double pressure = 18000000;//N/m^2	(1 bar = 100 000 N/m^2)
+        /* const double tensile_strength = 580000000;//N/m^2		(steel or aluminum); */
+        const double tensile_strength = 600000000;//N/m^2		(steel or aluminum);
+        const double safety_factor = 1.1;
+
+        //Note that octave uses the outside diameter here
+        inline double wall_thickness(double in_diameter)
+        {
+            return (pressure * 0.5*in_diameter * safety_factor) / tensile_strength;
+        }
     } 
 
     const double exhaust_velocity= 1798.32;//m/s	according to DoD at 137.895146 bar */	
@@ -26,16 +38,21 @@ namespace rocket {
         class Motor_crtp
         {
             public:
-                Motor_crtp(double length, double in_diameter): length_(length), in_diameter_(in_diameter)
+                Motor_crtp(double length, double in_diameter, bool insulated): length_(length), in_diameter_(in_diameter), insulated_(insulated)
             {
-                const auto wall_thickness = wall_thickness_(in_diameter_);
+                const auto wall_thickness = chamber::wall_thickness(in_diameter_);
                 //Note that octave uses the outside diameter here
-                out_diameter_ = in_diameter_ + 2.0*wall_thickness + 4.0*wall_thickness;
+                out_diameter_ = in_diameter_ + 2.0*wall_thickness;
+                if (insulated)
+                    out_diameter_ += 4.0*wall_thickness;
             }
+
+                double out_diameter() const {return out_diameter_;}
+                double in_diameter() const {return in_diameter_;}
 
                 double thrust() const
                 {
-                    const double isp = 180;//ISP: at 135 bar @ sea level: 186s (170-190)
+                    const double isp = 186;//ISP: at 135 bar @ sea level: 186s (170-190)
 
                     //Propellant consumption a.k.a. propellant burn rate a.k.a m_dot	892.3394983	kg/s
                     const double motor_propellant_burn_rate = receiver_().burning_surface() * galcit::burn_rate_at_135_bar * galcit::density;
@@ -52,7 +69,7 @@ namespace rocket {
                 {
                     const double motor_cylinder_volume = length_ * (out_diameter_*out_diameter_ - in_diameter_*in_diameter_)*Pi/4.0;
                     const double motor_mass_overhead = 1.1;//To account for the mass of the nozzle, fore side flange - TODO: increase this?
-                    return motor_cylinder_volume * chamber::material_density * motor_mass_overhead;
+                    return motor_cylinder_volume * (insulated_ ? chamber::material_density_steel_insulated : chamber::material_density_steel) * motor_mass_overhead;
                 }
                 double propellant_mass() const
                 {
@@ -72,15 +89,7 @@ namespace rocket {
                 Receiver &receiver_() {return static_cast<Receiver&>(*this);}
                 const Receiver &receiver_() const {return static_cast<const Receiver&>(*this);}
 
-                //Note that octave uses the outside diameter here
-                static double wall_thickness_(double in_diameter)
-                {
-                    const double pressure = 20000000;//N/m^2	(1 bar = 100 000 N/m^2)
-                    const double tensile_strength = 580000000;//N/m^2		(steel or aluminum);
-                    const double safety_factor = 1.1;
-                    return (pressure * 0.5*in_diameter * safety_factor) / tensile_strength;
-                }
-
+                bool insulated_ = false;
                 double length_ = 0.0;
                 double in_diameter_ = 0.0;
                 double out_diameter_ = 0.0;
@@ -94,7 +103,7 @@ namespace rocket {
         public:
             using Motor = Motor_crtp<SideBurner>;
 
-            SideBurner(double length, double in_diameter): Motor(length, in_diameter) {}
+            SideBurner(double length, double in_diameter, bool insulated): Motor(length, in_diameter, insulated) {}
 
             const char *name() const {return "SideBurner";}
 
@@ -124,7 +133,7 @@ namespace rocket {
         public:
             using Motor = Motor_crtp<EndBurner>;
 
-            EndBurner(double length, double in_diameter): Motor(length, in_diameter) {}
+            EndBurner(double length, double in_diameter, bool insulated): Motor(length, in_diameter, insulated) {}
 
             const char *name() const {return "EndBurner";}
 

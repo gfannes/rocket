@@ -22,9 +22,13 @@ namespace rocket {
             return *this;
         }
 
+        double square_norm() const
+        {
+            return x*x + y*y;
+        }
         double norm() const
         {
-            return std::sqrt(x*x + y*y);
+            return std::sqrt(square_norm());
         }
         double inprod(const V2 &rhs) const
         {
@@ -33,6 +37,10 @@ namespace rocket {
         double angle(const V2 &rhs) const
         {
             return std::acos(inprod(rhs)/norm()/rhs.norm());
+        }
+        double angle() const
+        {
+            return std::atan2(y, x);
         }
         double distance(const V2 &rhs) const
         {
@@ -43,6 +51,26 @@ namespace rocket {
 
         V2 invert() const {return V2{-x, -y};}
         V2 multiply(double f) const {return V2{x*f, y*f};}
+
+        V2 rotate(double angle) const
+        {
+            const auto cos = std::cos(angle);
+            const auto sin = std::sin(angle);
+            return V2{x*cos + -y*sin, x*sin + y*cos};
+        }
+
+        bool project(const V2 &direction)
+        {
+            const auto sn = direction.square_norm();
+            if (sn == Eps)
+                return false;
+            const auto cross = direction.x*direction.y;
+            const auto cross_x = cross*x;
+            const auto cross_y = cross*y;
+            x = (direction.x*direction.x*x + cross_y                  )/sn;
+            y = (cross_x                   + direction.y*direction.y*y)/sn;
+            return true;
+        }
 
         bool normalize()
         {

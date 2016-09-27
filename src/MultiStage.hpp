@@ -17,16 +17,16 @@ class MultiStage: public rocket::StagedRocket_crtp<MultiStage>
 
         MultiStage()
         {
+            //This is used for drag computations
             radius = 1.0;
             payload = 10.0e3;
 
-            //Reaches 164km with max_g of 7
             {
                 double r = 0.0972;
                 double l = 0.6;
-                stages.add(rocket::StageType::EndBurner, 1000, l, 2*r);
-                stages.add(rocket::StageType::EndBurner, 800,  l, 2*r);
-                stages.add(rocket::StageType::EndBurner, 350,  l, 2*r);
+                stages.add(rocket::StageType::EndBurner, 1000, l, 2*r, true);
+                stages.add(rocket::StageType::EndBurner, 800,  l, 2*r, true);
+                stages.add(rocket::StageType::EndBurner, 350,  l, 2*r, true);
             }
 
             update();

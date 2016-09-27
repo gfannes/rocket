@@ -9,12 +9,15 @@ namespace rocket {
     template <typename Rocket>
         class World
         {
+            private:
+                static constexpr const char *logns = nullptr;
+
             public:
                 World(Rocket &r): rocket_(r) {}
 
                 void process(double dt)
                 {
-                    S("world");
+                    S(logns);
                     const double height = rocket_.position.norm()-Earth::radius();
                     const double mass = rocket_.mass();
                     L(C(height)C(mass));
